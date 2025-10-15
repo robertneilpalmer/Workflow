@@ -1,0 +1,33 @@
+name: Convert Markdown to DOCX
+
+on:
+  push:
+    paths:
+      - '**/*.md'
+  workflow_dispatch:
+
+jobs:
+  convert:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Pandoc
+      run: sudo apt-get install -y pandoc
+
+    - name: Convert all Markdown files to DOCX
+      run: |
+        mkdir -p docx
+        for file in *.md; do
+          pandoc "$file" -o "docx/${file%.md}.docx"
+        done
+
+    - name: Upload DOCX files as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: docx-files
+        path: docx/
+
+        
